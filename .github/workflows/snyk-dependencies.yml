@@ -1,0 +1,42 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  snyk-security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Node.js Setup
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+          cache: "npm"
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Snyk CLI 
+        run: npm i -g snyk
+
+      - name: Authenticate Snyk
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk auth $SNYK_TOKEN
+        
+      - name: Run Snyk Test
+        run: snyk test --severity-threshold=high
+        continue-on-error: true
+        env:
+            SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Monitor project with Snyk
+        run: snyk monitor
+        env:
+            SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
