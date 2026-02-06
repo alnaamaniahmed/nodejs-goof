@@ -18,7 +18,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: "14"
-          cache: "npm"
       - name: Install dependencies
         run: npm install
 
@@ -29,7 +28,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: snyk auth $SNYK_TOKEN
-        
+
       - name: Run Snyk Test
         run: snyk test --severity-threshold=high
         continue-on-error: true
