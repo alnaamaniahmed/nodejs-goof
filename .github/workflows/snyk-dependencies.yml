@@ -9,32 +9,49 @@ on:
 jobs:
   snyk-security:
     runs-on: ubuntu-latest
-
+    #comment
     steps:
+      # Step 1: Checkout the repository code
+      # This pulls the source code so we can analyze it
       - name: Checkout Code
         uses: actions/checkout@v2
 
+      # Step 2: Set up Node.js environment
+      # Required because this is a Node.js project
       - name: Node.js Setup
         uses: actions/setup-node@v2
         with:
           node-version: "14"
+      # Step 3: Install project dependencies
+      # Snyk needs the dependencies installed to analyze them
       - name: Install dependencies
         run: npm install
-
+      
+      # Step 4: Install Snyk CLI globally
+      # The CLI is the command-line tool that performs security scans
       - name: Install Snyk CLI 
         run: npm i -g snyk
-
+      
+      # Step 5: Authenticate Snyk CLI with API token
+      # This connects the CLI to your Snyk account securely
       - name: Authenticate Snyk
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: snyk auth $SNYK_TOKEN
-
+      
+      # Step 6: Run Snyk Test - Scan for vulnerabilities
+      # Tests dependencies against Snyk's vulnerability database
+      # --severity-threshold=high means only fail on high/critical issues
+      # continue-on-error: true allows pipeline to continue even if vulnerabilities found
       - name: Run Snyk Test
         run: snyk test --severity-threshold=high
         continue-on-error: true
         env:
             SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
+      # Step 7: Run Snyk Monitor - Send snapshot to Snyk platform
+      # Creates a project in Snyk UI for ongoing monitoring
+      # Enables continuous vulnerability alerts as new issues are disclosed
       - name: Monitor project with Snyk
         run: snyk monitor
         env:
