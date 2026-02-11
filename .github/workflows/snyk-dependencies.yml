@@ -43,7 +43,11 @@ jobs:
       # Tests dependencies against Snyk's vulnerability database
       # --severity-threshold=high means only fail on high/critical issues
       # continue-on-error: true allows pipeline to continue even if vulnerabilities found
-      
+      - name: Run Snyk Test
+        run: snyk test --severity-threshold=high
+        continue-on-error: true
+        env:
+            SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       # Step 7: Run Snyk Monitor - Send snapshot to Snyk platform
       # Creates a project in Snyk UI for ongoing monitoring
