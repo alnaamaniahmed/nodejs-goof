@@ -8,6 +8,7 @@ on:
 
 jobs:
   snyk-security:
+    #comment
     runs-on: ubuntu-latest
     steps:
       # Step 1: Checkout the repository code
